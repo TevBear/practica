@@ -1,0 +1,4 @@
+3
+Ventilatie 100 3
+Incalzire 200 4
+Pinguin 3000 1
