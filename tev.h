@@ -1,15 +1,17 @@
 #include <fstream>
 #include <iomanip>
 #include <cstring>
+#include <string>
 #ifndef TEV_H_INCLUDED
 #define TEV_H_INCLUDED
 
 using namespace std;
 
-struct services{
+struct product{
 char name[30];
-double price;
+double price, airflow, power;
 int time;
+string vtype;
 }*t;
 int pn;
 
@@ -18,16 +20,18 @@ void ImportData(char filename[]){
 ifstream file;
 file.open(filename);
 file>>pn;
-t=new services[pn];
+t=new product[pn];
 
 for(int i=0;i<pn;i++){
-    file>>t[i].name>>t[i].price>>t[i].time;
+    file>>t[i].name>>t[i].price>>t[i].time>>t[i].airflow>>t[i].power;
+    getline(file,t[i].vtype);
+    if(t[i].vtype[0]==' ') t[i].vtype.erase(0, 1);
 }
 file.close();
 }
 //add data
 void AddData() {
-    services* newT = new services[pn + 1];
+    product* newT = new product[pn + 1];
 
     for (int i=0;i<pn;i++) {
         newT[i]=t[i];
@@ -41,20 +45,62 @@ void AddData() {
 
     cout<<"Enter time: ";
     cin>>newT[pn].time;
+
+    cout<<"Enter airflow: ";
+    cin>>newT[pn].airflow;
+
+    cout<<"Enter power: ";
+    cin>>newT[pn].power;
+
+    cout<<"Enter vtype: ";
+    cin.ignore();
+    getline(cin,newT[pn].vtype);
+
     pn++;
     delete[] t;
     t=newT;
 }
 //insert data
 void InsertData(){
-    int id;
-    cout<<"| Insert data |\n(id:)\n";
-    cin>>id;
-    if (id<0||id>pn){
-        cout << "Invalid id. Data not inserted."<<endl;
-        return;
+    //
+    while(true){
+    cout<<"| Insert data |\n";
+    int id,v,i2=0;
+    int menusize=pn+1;
+    char m[menusize];
+    for(int i=1;i<menusize;i++) m[i]=' ';
+    m[0]='<';
+    system("cls");
+    while(true){
+            system("cls");
+    cout<<setw(20)<<"Name"<<setw(15)<<"Price"<<setw(10)<<"Time"<<setw(10)<<"Airflow"<<setw(10)<<"power"<<setw(20)<<"Vtype"<<endl;
+    for(int i=0;i<102;i++)cout<<'_';
+
+    cout<<endl;
+    for(int i=0;i<pn;i++){
+        cout<<setw(20)<<t[i].name<<setw(15)<<t[i].price<<setw(10)<<t[i].time<<setw(10)<<t[i].airflow<<setw(10)<<t[i].power<<setw(20)<<t[i].vtype<<setw(2)<<m[i]<<endl;
     }
-    services* newT = new services[pn+1];
+    cout<<"Exit"<<m[menusize-1];
+    v=getch();
+
+    if(v==32){
+        if(i2==menusize-1){ swap(m[menusize-1],m[0]); i2=0;}
+        else{ swap(m[i2],m[i2+1]);i2++;}
+    }
+    else if(v==9){
+        if(i2==0){ swap(m[menusize-1],m[0]); i2=menusize-1;}
+        else{ swap(m[i2],m[i2-1]);i2--;}
+    }
+    else {id=i2; break;}
+
+    }
+    if (id>=pn) {
+        break;
+    }
+    //
+
+    system("cls");
+    product* newT = new product[pn+1];
     for (int i=0;i<id;i++){
         newT[i]=t[i];
     }
@@ -67,28 +113,67 @@ void InsertData(){
     cout<<"Enter time: ";
     cin>>newT[id].time;
 
+    cout<<"Enter airflow: ";
+    cin>>newT[id].airflow;
+
+    cout<<"Enter power: ";
+    cin>>newT[id].power;
+
+    cout<<"Enter vtype: ";
+    cin.ignore();
+    getline(cin, newT[id].vtype);
+
     for (int i=id; i<pn;i++){
         newT[i+1]=t[i];
     }
     pn++;
     delete[] t;
     t=newT;
-}
+}}
 
 
 //delete data
 void DeleteP(){
-    int id;
-    cin>>id;
-    if (id<0||id>=pn) {
-        cout << "erroare :(";
+
+    while(true){
+    int id,v,i2=0;
+    int menusize=pn+1;
+    char m[menusize];
+    for(int i=1;i<menusize;i++) m[i]=' ';
+    m[0]='<';
+    system("cls");
+    while(true){
+            system("cls");
+    cout<<setw(20)<<"Name"<<setw(15)<<"Price"<<setw(10)<<"Time"<<setw(10)<<"Airflow"<<setw(10)<<"power"<<setw(20)<<"Vtype"<<endl;
+    for(int i=0;i<102;i++)cout<<'_';
+
+    cout<<endl;
+    for(int i=0;i<pn;i++){
+        cout<<setw(20)<<t[i].name<<setw(15)<<t[i].price<<setw(10)<<t[i].time<<setw(10)<<t[i].airflow<<setw(10)<<t[i].power<<setw(20)<<t[i].vtype<<setw(2)<<m[i]<<endl;
+    }
+    cout<<"Exit"<<m[menusize-1];
+    v=getch();
+
+    if(v==32){
+        if(i2==menusize-1){ swap(m[menusize-1],m[0]); i2=0;}
+        else{ swap(m[i2],m[i2+1]);i2++;}
+    }
+    else if(v==9){
+        if(i2==0){ swap(m[menusize-1],m[0]); i2=menusize-1;}
+        else{ swap(m[i2],m[i2-1]);i2--;}
+    }
+    else {id=i2; break;}
+
+    }
+    if (id>=pn) {
+        break;
     }
 
     for (int i=id;i<pn-1;i++){
         t[i]=t[i+1];
     }
     pn--;
-    services* newT = new services[pn];
+    product* newT = new product[pn];
 
     for (int i=0;i<pn;i++){
         newT[i]=t[i];
@@ -96,76 +181,139 @@ void DeleteP(){
 
     delete[] t;
     t = newT;
+    }
 }
 //max
-services FindMaxService(bool byPrice){
+product FindMaxService(){
     if (pn==0){
-        cout<<"No services available."<<endl;
+        cout<<"No product available."<<endl;
         return {};
     }
+    while(true){
+    char m7[5];
+    for(int i=0;i<5;i++) m7[i]=' ';
+    m7[0]='<';
+    cout<<"| Find MAX |\n";
+    char v7; int i7=0,n7=0;
+        while(true){
+            system("cls");
+            cout<<"Time "<<m7[0]<<endl;
+            cout<<"Price "<<m7[1]<<endl;
+            cout<<"Airflow "<<m7[2]<<endl;
+            cout<<"Power "<<m7[3]<<endl;
+            cout<<"Exit "<<m7[4]<<endl;
+            v7=getch();
+            if(v7==32){
+                if(i7==4){ swap(m7[4],m7[0]); i7=0;}
+                else{ swap(m7[i7],m7[i7+1]); i7++;}
+            }
+            else if(v7==9){
+                if(i7==0){ swap(m7[4],m7[0]); i7=4;}
+                else{ swap(m7[i7],m7[i7-1]); i7--;}
+            }
+            else {n7=i7; break;}
+        }
+        if(n7==4) break;
+    product maxService = t[0];
 
-    services maxService = t[0];
-    for (int i=1;i<pn;i++){
-        if (byPrice){
+         switch(n7){
+            case 1:{
+                for (int i=1;i<pn;i++)
             if (t[i].price>maxService.price){
                 maxService=t[i];
             }
-        } else{
+                break;}
+            case 0:{
+                for (int i=1;i<pn;i++)
             if (t[i].time>maxService.time){
                 maxService=t[i];
             }
-        }
+                break;}
+            case 2:{
+                for (int i=1;i<pn;i++){
+                if (t[i].airflow>maxService.airflow){
+                maxService=t[i];
+            }}
+                break;}            case 3:{
+                for (int i=1;i<pn;i++)
+                if (t[i].power>maxService.power){
+                maxService=t[i];
+            }
+                break;}
+
     }
 
-    cout<<setw(20)<<"Name"<<setw(15)<<"Price"<<setw(5)<<setw(10)<<"Time"<<endl;
+    cout<<setw(20)<<"Name"<<setw(15)<<"Price"<<setw(5)<<setw(10)<<"Time"<<setw(10)<<"Airflow"<<setw(10)<<"power"<<setw(20)<<"Vtype"<<endl;
     for(int i=0;i<102;i++)cout<<'_';
     cout<<endl;
-        cout<<setw(20)<<maxService.name<<setw(15)<<maxService.price<<setw(10)<<maxService.time<<endl;
-}
-
+        cout<<setw(20)<<maxService.name<<setw(15)<<maxService.price<<setw(10)<<maxService.time<<setw(10)<<maxService.airflow<<setw(10)<<maxService.power<<setw(20)<<maxService.vtype<<endl;
+getch();
+}}
 void UpdateService(){
-    int id;
-    cin>>id;
-    if (id<0||id>=pn){
-        cout << "Invalid id. Service not updated." << endl;
-        return;
-    }
-
-
-
-/*
-    cout << "Enter new name: ";
-    cin>>t[id].name;
-
-    cout<<"Enter new price: ";
-    cin>>t[id].price;
-
-    cout<<"Enter new time: ";
-    cin>>t[id].time;
-
-    cout<<"Service updated" << endl; getch();*/
+        //
     while(true){
-    char m7[5]={'<',' ',' '};
-    cout<<"| Color change |\n";
+
+    int id,v,i2=0;
+    int menusize=pn+1;
+    char m[menusize];
+    for(int i=1;i<menusize;i++) m[i]=' ';
+    m[0]='<';
+    system("cls");
+    while(true){
+            system("cls");
+    cout<<setw(20)<<"Name"<<setw(15)<<"Price"<<setw(10)<<"Time"<<setw(10)<<"Airflow"<<setw(10)<<"power"<<setw(20)<<"Vtype"<<endl;
+    for(int i=0;i<102;i++)cout<<'_';
+
+    cout<<endl;
+    for(int i=0;i<pn;i++){
+        cout<<setw(20)<<t[i].name<<setw(15)<<t[i].price<<setw(10)<<t[i].time<<setw(10)<<t[i].airflow<<setw(10)<<t[i].power<<setw(20)<<t[i].vtype<<setw(2)<<m[i]<<endl;
+    }
+    cout<<"Exit"<<m[menusize-1];
+    v=getch();
+
+    if(v==32){
+        if(i2==menusize-1){ swap(m[menusize-1],m[0]); i2=0;}
+        else{ swap(m[i2],m[i2+1]);i2++;}
+    }
+    else if(v==9){
+        if(i2==0){ swap(m[menusize-1],m[0]); i2=menusize-1;}
+        else{ swap(m[i2],m[i2-1]);i2--;}
+    }
+    else {id=i2; break;}
+
+    }
+    if (id>=pn) {
+        break;
+    }
+    //
+
+    while(true){
+    char m7[7];
+    for(int i=0;i<7;i++) m7[i]=' ';
+    m7[0]='<';
+
     char v7; int i7=0,n7=0;
         while(true){
             system("cls");
             cout<<t[id].name<<' '<<m7[0]<<endl;
             cout<<t[id].price<<' '<<m7[1]<<endl;
             cout<<t[id].time<<' '<<m7[2]<<endl;
-            cout<<"Exit "<<m7[3]<<endl<<endl;
+            cout<<t[id].airflow<<' '<<m7[3]<<endl;
+            cout<<t[id].power<<' '<<m7[4]<<endl;
+            cout<<t[id].vtype<<' '<<m7[5]<<endl;
+            cout<<"Exit "<<m7[6]<<endl<<endl;
             v7=getch();
             if(v7==32){
-                if(i7==3){ swap(m7[3],m7[0]); i7=0;}
+                if(i7==6){ swap(m7[6],m7[0]); i7=0;}
                 else{ swap(m7[i7],m7[i7+1]); i7++;}
             }
             else if(v7==9){
-                if(i7==0){ swap(m7[3],m7[0]); i7=3;}
+                if(i7==0){ swap(m7[6],m7[0]); i7=6;}
                 else{ swap(m7[i7],m7[i7-1]); i7--;}
             }
             else {n7=i7; break;}
         }
-        if(n7==3)break;
+        if(n7==6)break;
     switch(n7){
     case 0:
         cin>>t[id].name;
@@ -176,30 +324,30 @@ void UpdateService(){
     case 2:
         cin>>t[id].time;
         break;
+    case 3:
+        cin>>t[id].airflow;
+        break;
+    case 4:
+        cin>>t[id].power;
+        break;
+    case 5:
+        cin.ignore();
+        getline(cin,t[id].vtype);
+        break;
     }
     continue;
-    v7=getch();
-    if(v7==32){
-                if(i7==2){ swap(m7[2],m7[0]); i7=0;}
-                else{ swap(m7[i7],m7[i7+1]); i7++;}
-            }
-            else if(v7==9){
-                if(i7==0){ swap(m7[2],m7[0]); i7=2;}
-                else{ swap(m7[i7],m7[i7-1]); i7--;}
-            }
-            else break;
-    }
-}
+
+}}}
 
 
 //afisarea datelor
 void ShowData(){
     system("cls");
-    cout<<setw(20)<<"Name"<<setw(15)<<"Price"<<setw(10)<<"Time"<<setw(5)<<"Id"<<endl;
+    cout<<setw(20)<<"Name"<<setw(15)<<"Price"<<setw(10)<<"Time"<<setw(10)<<"Airflow"<<setw(10)<<"power"<<setw(20)<<"Vtype"<<endl;
     for(int i=0;i<102;i++)cout<<'_';
     cout<<endl;
     for(int i=0;i<pn;i++){
-        cout<<setw(20)<<t[i].name<<setw(15)<<t[i].price<<setw(10)<<t[i].time<<setw(5)<<i<<endl;
+        cout<<setw(20)<<t[i].name<<setw(15)<<t[i].price<<setw(10)<<t[i].time<<setw(10)<<t[i].airflow<<setw(10)<<t[i].power<<setw(20)<<t[i].vtype<<endl;
     }
     getch();
 }
@@ -210,7 +358,7 @@ void ExportData(const char* filename) {
     file.open(filename);
     file<<pn<<endl;
     for (int i=0;i<pn;i++) {
-        file<<t[i].name<<' '<<t[i].price<<' '<<t[i].time<<endl;
+        file<<t[i].name<<' '<<t[i].price<<' '<<t[i].time<<' '<<t[i].airflow<<' '<<t[i].power<<' '<<t[i].vtype<<endl;
     }
     file.close();
 }
@@ -253,4 +401,151 @@ void color(){
             else break;
     }
 }
+
+void sortdata(){
+
+while(true){
+    char m7[5];
+    for(int i=0;i<5;i++) m7[i]=' ';
+    m7[0]='<';
+    cout<<"| Sort Data |\n";
+    char v7; int i7=0,n7=0;
+        while(true){
+            system("cls");
+            cout<<"Time "<<m7[0]<<endl;
+            cout<<"Price "<<m7[1]<<endl;
+            cout<<"Airflow "<<m7[2]<<endl;
+            cout<<"Power "<<m7[3]<<endl;
+            cout<<"Exit "<<m7[4]<<endl;
+            v7=getch();
+            if(v7==32){
+                if(i7==4){ swap(m7[4],m7[0]); i7=0;}
+                else{ swap(m7[i7],m7[i7+1]); i7++;}
+            }
+            else if(v7==9){
+                if(i7==0){ swap(m7[4],m7[0]); i7=4;}
+                else{ swap(m7[i7],m7[i7-1]); i7--;}
+            }
+            else {n7=i7; break;}
+        }
+        if(n7==4) break;
+        switch(n7){
+    case 0:
+        for(int i=0;i<pn-1;i++)
+        for(int j=0;j<pn-i-1;j++)
+        if(t[j].time<t[j+1].time)
+            swap(t[j].time,t[j+1].time);
+        break;
+    case 1:
+        for(int i=0;i<pn-1;i++)
+        for(int j=0;j<pn-i-1;j++)
+        if(t[j].price<t[j+1].price)
+            swap(t[j].price,t[j+1].price);
+        break;
+    case 2:
+        for(int i=0;i<pn-1;i++)
+        for(int j=0;j<pn-i-1;j++)
+        if(t[j].airflow<t[j+1].airflow)
+            swap(t[j].airflow,t[j+1].airflow);
+        break;
+    case 3:
+        for(int i=0;i<pn-1;i++)
+        for(int j=0;j<pn-i-1;j++)
+        if(t[j].power<t[j+1].power)
+            swap(t[j].power,t[j+1].power);
+        break;
+        }
+    cout<<"Sorted"<<endl;
+getch();
+break;
+    }}
+void getmed(){
+while(true){
+    char m7[5]; int med;
+    for(int i=0;i<5;i++) m7[i]=' ';
+    m7[0]='<';
+    cout<<"| Med Data |\n";
+    char v7; int i7=0,n7=0;
+        while(true){
+            system("cls");
+            cout<<"Time "<<m7[0]<<endl;
+            cout<<"Price "<<m7[1]<<endl;
+            cout<<"Airflow "<<m7[2]<<endl;
+            cout<<"Power "<<m7[3]<<endl;
+            cout<<"Exit "<<m7[4]<<endl;
+            v7=getch();
+            if(v7==32){
+                if(i7==4){ swap(m7[4],m7[0]); i7=0;}
+                else{ swap(m7[i7],m7[i7+1]); i7++;}
+            }
+            else if(v7==9){
+                if(i7==0){ swap(m7[4],m7[0]); i7=4;}
+                else{ swap(m7[i7],m7[i7-1]); i7--;}
+            }
+            else {n7=i7; break;}
+        }
+        if(n7==4) break;
+        med=0;
+        cout<<"| Med data |"<<endl;
+        switch(n7){
+    case 0:{
+        for(int i=0;i<pn;i++) med+=t[i].time;
+        med/=pn;
+        break;
+        }
+    case 1:{
+        for(int i=0;i<pn;i++) med+=t[i].price;
+        med/=pn;
+        break;
+        }
+    case 2:{
+        for(int i=0;i<pn;i++) med+=t[i].airflow;
+        med/=pn;
+        break;
+        }
+    case 3:{
+        for(int i=0;i<pn;i++) med+=t[i].power;
+        med/=pn;
+        break;
+        }}
+    cout<<med;
+getch();
+}}
+void cutdata(){
+    while(true){
+
+    int id,v,i2=0;
+    int menusize=pn+1;
+    char m[menusize];
+    for(int i=1;i<menusize;i++) m[i]=' ';
+    m[0]='<';
+    system("cls");
+    while(true){
+            system("cls");
+    cout<<setw(20)<<"Name"<<setw(15)<<"Price"<<setw(10)<<"Time"<<setw(10)<<"Airflow"<<setw(10)<<"power"<<setw(20)<<"Vtype"<<endl;
+    for(int i=0;i<102;i++)cout<<'_';
+
+    cout<<endl;
+    for(int i=0;i<pn;i++){
+        cout<<setw(20)<<t[i].name<<setw(15)<<t[i].price<<setw(10)<<t[i].time<<setw(10)<<t[i].airflow<<setw(10)<<t[i].power<<setw(20)<<t[i].vtype<<setw(2)<<m[i]<<endl;
+    }
+    cout<<"Exit"<<m[menusize-1];
+    v=getch();
+
+    if(v==32){
+        if(i2==menusize-1){ swap(m[menusize-1],m[0]); i2=0;}
+        else{ swap(m[i2],m[i2+1]);i2++;}
+    }
+    else if(v==9){
+        if(i2==0){ swap(m[menusize-1],m[0]); i2=menusize-1;}
+        else{ swap(m[i2],m[i2-1]);i2--;}
+    }
+    else {id=i2; break;}
+    }
+    if(id==menusize-1)break;
+    string vd[2]={"aer ","aer de "};
+    if(t[id].vtype.compare(0,7,vd[1])==0) t[id].vtype.erase(0, 7);
+    else if(t[id].vtype.compare(0,4,vd[0])==0) t[id].vtype.erase(0, 4);
+
+}}
 #endif // TEV_H_INCLUDED
